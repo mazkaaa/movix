@@ -10,32 +10,34 @@ const InteractButtonHandler = () => {
     }
   }, []);
 
-  useDeepCompareEffect(() => {
-    if (watchList.length > 0) {
-      localStorage.setItem("watchlist", JSON.stringify(watchList));
-    }
-  }, [watchList]);
-
   const addItem = (id, type) => {
-    const tempArray = [];
-    tempArray.push(...watchList);
-    tempArray.push({
+    const currentData = {
       item_id: `${id}_${type}`,
       detail: {
         id,
         type,
       },
-    });
-    setWatchList(tempArray);
+    };
+    setWatchList((old) => [...old, currentData]);
   };
 
   const isListed = (id, type) => {
+    let value = false;
     const itemId = `${id}_${type}`;
+    watchList.forEach((item) => {
+      if (item.item_id === itemId) {
+        value = true;
+      } else {
+        value = false;
+      }
+    });
+    return value;
   };
 
   const removeItem = (id, type) => {
     const itemId = `${id}_${type}`;
-    setWatchList((old) => old.filter((item) => item.item_id !== itemId));
+    console.log(itemId);
+    setWatchList((old) => old.filter((element) => element.item_id !== itemId));
   };
 
   return {

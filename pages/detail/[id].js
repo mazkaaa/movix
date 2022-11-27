@@ -50,7 +50,7 @@ const Movie = (props) => {
                   <h3>{data.genres.join(", ")}</h3>
                   <p className="pt-2">{data.description}</p>
                 </div>
-                <div className="mt-6">
+                <div className="mt-4">
                   <InteractButton data={props} />
                 </div>
               </div>
