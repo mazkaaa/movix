@@ -3,22 +3,28 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/layout";
 import Constant from "../../components/constants";
 import InteractButton from "../../components/reusables/interactButton";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next/types";
+import { ParsedUrlQuery } from "querystring";
 
-const Movie = (props) => {
-  const { category } = props.query;
+const Movie = (
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) => {
   const constant = Constant();
 
   const [data, setData] = useState({
     title: "",
-    genres: [],
+    genres: [""],
     description: "",
     poster_path: "",
   });
 
   useEffect(() => {
     console.log(props.data);
-    const genreList = [];
-    props.data.genres.forEach((item) => {
+    const genreList: string[] = [];
+    props.data.genres.forEach((item: {
+      id: number,
+      name: string
+    }) => {
       genreList.push(item.name);
     });
     setData({
@@ -51,7 +57,7 @@ const Movie = (props) => {
                   <p className="pt-2">{data.description}</p>
                 </div>
                 <div className="mt-4">
-                  <InteractButton data={props} />
+                  <InteractButton data={props.data} id={props.id} query={props.query} />
                 </div>
               </div>
             </div>
@@ -61,24 +67,30 @@ const Movie = (props) => {
     </Layout>
   );
 };
-
-export async function getServerSideProps(context) {
-  const { id } = context.params;
+interface PropsInterface {
+  id: number;
+  query: ParsedUrlQuery;
+  data: any;
+}
+export const getServerSideProps: GetServerSideProps<PropsInterface> = async (
+  context
+) => {
+  const { id }: any = context.params;
   const { query } = context;
   const constant = Constant();
+  const params = new URLSearchParams();
+  params.append("api_key", process.env.NEXT_PUBLIC_MOVIEDB_API_KEY!);
+  const apiKeyParam = params.get("api_key");
 
   const detailResult = await fetch(
-    `${constant.api.MOVIEDB_API_URL_V3}/${
-      query.category
-    }/${id}?${new URLSearchParams({
-      api_key: process.env.NEXT_PUBLIC_MOVIEDB_API_KEY,
-    })}`,
+    `${constant.api.MOVIEDB_API_URL_V3}/${query.category}/${id}?api_key=${apiKeyParam}`,
     {
       method: "GET",
     }
   );
 
   const data = await detailResult.json();
+
   return {
     props: {
       id,
@@ -86,6 +98,6 @@ export async function getServerSideProps(context) {
       data,
     },
   };
-}
+};
 
 export default Movie;

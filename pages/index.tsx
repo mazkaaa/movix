@@ -5,26 +5,28 @@ import Link from "next/link";
 import Layout from "../components/layout";
 import Constant from "../components/constants";
 import MovieCard from "../components/reusables/movieCard";
+import { InferGetServerSidePropsType } from "next";
+import { MoviesInterface, SeriesInterface } from "./index.interface";
 
-export default function Home({ data }) {
-  const [trending, setTrending] = useState({});
+export default function Home({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+
+  const [movies, setMovies] = useState<MoviesInterface[]>([])
+  const [series, setSeries] = useState<SeriesInterface[]>([]);
+
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const constant = Constant();
 
-  useDeepCompareEffect(() => {
-    setTrending({
-      movies: data.movies.results,
-      series: data.series.results,
-    });
-    setDataLoaded(true);
+  useEffect(() => {
+    setMovies(data.movies)
+    setSeries(data.series)
   }, [data]);
 
-  useEffect(() => {
-    if (dataLoaded) {
-      console.log(trending);
+  useDeepCompareEffect(() => {
+    if (movies.length > 0 && series.length > 0) {
+      setDataLoaded(true)
     }
-  }, [dataLoaded, trending]);
+  }, [movies, series])
 
   return (
     <Layout title="Home">
@@ -40,14 +42,16 @@ export default function Home({ data }) {
                 Trending Movies
               </h1>
               <div className="flex flex-row flex-wrap mt-4">
-                {trending.movies.map((item) => (
+                {movies.map((item) => (
                   <Link
                     href={`/detail/${item.id}?category=movie`}
                     key={item.popularity}
+                    className="mr-3 mb-3"
                   >
-                    <a className="my-2 mr-4">
-                      <MovieCard data={item} />
-                    </a>
+                    <MovieCard
+                      title={item.title}
+                      backdrop_path={item.backdrop_path}
+                    />
                   </Link>
                 ))}
               </div>
@@ -57,14 +61,16 @@ export default function Home({ data }) {
                 Trending TV Series
               </h1>
               <div className="flex flex-row flex-wrap mt-4">
-                {trending.series.map((item) => (
+                {series.map((item) => (
                   <Link
                     href={`/detail/${item.id}?category=tv`}
                     key={item.popularity}
+                    className="mr-3 mb-3"
                   >
-                    <a className="my-2 mr-4">
-                      <MovieCard data={item} />
-                    </a>
+                    <MovieCard
+                      name={item.name}
+                      backdrop_path={item.backdrop_path}
+                    />
                   </Link>
                 ))}
               </div>
@@ -77,14 +83,14 @@ export default function Home({ data }) {
 }
 
 export async function getServerSideProps() {
+  const params = new URLSearchParams()
+  params.append("api_key", process.env.NEXT_PUBLIC_MOVIEDB_API_KEY!);
+  params.append("page", "1");
   const constant = Constant();
   const movies = await fetch(
-    `${
-      constant.api.MOVIEDB_API_URL_V3
-    }/trending/movie/day?${new URLSearchParams({
-      api_key: process.env.NEXT_PUBLIC_MOVIEDB_API_KEY,
-      page: 1,
-    })}`,
+    `${constant.api.MOVIEDB_API_URL_V3}/trending/movie/day?api_key=${params.get(
+      "api_key"
+    )}&page=${params.get("page")}`,
     {
       method: "GET",
       headers: {
@@ -94,10 +100,9 @@ export async function getServerSideProps() {
     }
   );
   const series = await fetch(
-    `${constant.api.MOVIEDB_API_URL_V3}/trending/tv/day?${new URLSearchParams({
-      api_key: process.env.NEXT_PUBLIC_MOVIEDB_API_KEY,
-      page: 1,
-    })}`,
+    `${constant.api.MOVIEDB_API_URL_V3}/trending/tv/day?api_key=${params.get(
+      "api_key"
+    )}&page=${params.get("page")}`,
     {
       method: "GET",
       headers: {
@@ -106,10 +111,14 @@ export async function getServerSideProps() {
       },
     }
   );
+
+  const moviesData = await movies.json()
+  const seriesData = await series.json()
   const data = {
-    movies: await movies.json(),
-    series: await series.json(),
+    movies: moviesData.results,
+    series: seriesData.results,
   };
+  let number = 0
   return {
     props: {
       data,

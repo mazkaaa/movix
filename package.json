@@ -1,5 +1,5 @@
 {
-  "name": "movix",
+  "name": "movix-ts",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,27 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "atropos": "^1.0.2",
-    "daisyui": "^2.20.0",
+    "@types/node": "18.11.9",
+    "@types/react": "18.0.25",
+    "@types/react-dom": "18.0.9",
+    "autoprefixer": "^10.4.13",
+    "daisyui": "^2.42.1",
+    "eslint": "8.28.0",
+    "eslint-config-next": "13.0.5",
+    "eslint-config-prettier": "^8.5.0",
     "next": "13.0.5",
+    "postcss": "^8.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "tailwindcss": "^3.2.4",
+    "typescript": "4.9.3",
     "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.7",
-    "eslint": "^7.32.0 || ^8.2.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-next": "13.0.5",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.25.2",
-    "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.28.0",
-    "eslint-plugin-react-hooks": "^4.3.0",
-    "postcss": "^8.4.14",
-    "prettier": "2.6.2",
-    "tailwindcss": "^3.1.2"
+    "prettier": "2.8.0"
   }
 }

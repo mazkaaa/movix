@@ -7,17 +7,17 @@ const Navbar = () => {
         <ul className="flex justify-between">
           <li>
             <Link href="/">
-              <a>Home</a>
+              Home
             </Link>
           </li>
           <li>
             <Link href="/watchlist">
-              <a>Watch List</a>
+              Watch List
             </Link>
           </li>
           <li>
             <Link href="/movies">
-              <a>Movies</a>
+              Movies
             </Link>
           </li>
         </ul>
