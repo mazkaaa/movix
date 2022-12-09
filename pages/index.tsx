@@ -24,7 +24,6 @@ interface MoviesInterface {
   vote_average: DoubleRange;
   vote_count: number;
 };
-
 interface SeriesInterface {
   adult: boolean;
   backdrop_path: string;
